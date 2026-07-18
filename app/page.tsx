@@ -39,7 +39,7 @@ export default function OverviewPage() {
     <div className="mx-auto max-w-7xl px-6">
       {/* Hero */}
       <section className="pt-14 pb-10">
-        <p className="text-sm font-semibold uppercase tracking-wider text-brand-700">
+        <p className="text-sm font-semibold uppercase tracking-wider text-[var(--accent-text)]">
           Consumer Credit · Financial-Stress Monitor
         </p>
         <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
@@ -108,10 +108,10 @@ export default function OverviewPage() {
               <span className="h-2 w-4 rounded-sm bg-ink-soft" /> Observed
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-2 w-4 rounded-sm bg-brand-600" /> Forecast
+              <span className="h-2 w-4 rounded-sm bg-[var(--data-primary)]" /> Forecast
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-2 w-4 rounded-sm bg-brand-500/30" /> 80% band
+              <span className="h-2 w-4 rounded-sm bg-[var(--data-band)]" /> 80% band
             </span>
           </div>
         </div>
