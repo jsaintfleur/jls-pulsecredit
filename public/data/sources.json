@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-07-18T02:05:38.046184+00:00",
+  "sources": [
+    {
+      "name": "FRED (Federal Reserve Bank of St. Louis)",
+      "series_id": "DRCCLACBS",
+      "description": "Delinquency rate on credit card loans, all commercial banks (%)",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DRCCLACBS",
+      "license": "Public domain / FRED Terms of Use (U.S. Government data)",
+      "access": "keyless (fredgraph CSV endpoint)",
+      "role": "forecast_target/scenario_target"
+    },
+    {
+      "name": "FRED (Federal Reserve Bank of St. Louis)",
+      "series_id": "DRCLACBS",
+      "description": "Delinquency rate on consumer loans, all commercial banks (%)",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DRCLACBS",
+      "license": "Public domain / FRED Terms of Use (U.S. Government data)",
+      "access": "keyless (fredgraph CSV endpoint)",
+      "role": "context"
+    },
+    {
+      "name": "FRED (Federal Reserve Bank of St. Louis)",
+      "series_id": "CORCCACBS",
+      "description": "Charge-off rate on credit card loans, all commercial banks (%)",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CORCCACBS",
+      "license": "Public domain / FRED Terms of Use (U.S. Government data)",
+      "access": "keyless (fredgraph CSV endpoint)",
+      "role": "context"
+    },
+    {
+      "name": "FRED (Federal Reserve Bank of St. Louis)",
+      "series_id": "UNRATE",
+      "description": "Civilian unemployment rate (%)",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=UNRATE",
+      "license": "Public domain / FRED Terms of Use (U.S. Government data)",
+      "access": "keyless (fredgraph CSV endpoint)",
+      "role": "scenario_driver"
+    },
+    {
+      "name": "FRED (Federal Reserve Bank of St. Louis)",
+      "series_id": "TDSP",
+      "description": "Household debt service payments as % of disposable income (%)",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=TDSP",
+      "license": "Public domain / FRED Terms of Use (U.S. Government data)",
+      "access": "keyless (fredgraph CSV endpoint)",
+      "role": "scenario_driver"
+    },
+    {
+      "name": "CFPB Consumer Complaint Database (trends API)",
+      "series_id": "consumer_complaints",
+      "description": "Monthly consumer complaint volume, total and by product.",
+      "url": "https://www.consumerfinance.gov/data-research/consumer-complaints/search/api/v1/trends/",
+      "license": "Public domain (U.S. Government / CFPB open data)",
+      "access": "keyless (trends aggregation endpoint)",
+      "role": "anomaly_layer"
+    }
+  ],
+  "labels": {
+    "computed": "Values derived/estimated by this pipeline (forecast, regression, anomaly scores, backtest error).",
+    "proposed": "None \u2014 all published artifacts are computed from live public data."
+  }
+}

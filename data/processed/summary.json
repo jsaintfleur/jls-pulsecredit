@@ -1,0 +1,141 @@
+{
+  "generated_at": "2026-07-18T02:05:38.045566+00:00",
+  "headline": {
+    "metric": "Credit-card delinquency rate (DRCCLACBS)",
+    "latest_value_pct": 2.92,
+    "as_of": "2026-01-01",
+    "yoy_change_pp": -0.14,
+    "status": "computed"
+  },
+  "forecast": {
+    "status": "computed",
+    "method": "SARIMAX(1, 1, 1) 80% band",
+    "trajectory_pct": [
+      2.905,
+      2.894,
+      2.887,
+      2.882
+    ],
+    "horizon_end": "2027-01-01",
+    "backtest": {
+      "holdout_quarters": 8,
+      "model_mape_pct": 8.335,
+      "model_rmse": 0.2868,
+      "naive_mape_pct": 4.506,
+      "naive_rmse": 0.1549,
+      "beats_naive_rmse": false,
+      "beats_naive_mape": false
+    },
+    "beats_naive_baseline": false
+  },
+  "scenario": {
+    "status": "computed",
+    "unrate_beta_pp_per_pp": 0.1396,
+    "r_squared": 0.7561,
+    "plus_2pp_unemployment_delta_pp": 0.2792,
+    "detail": {
+      "method": "OLS: DRCCLACBS ~ const + UNRATE + TDSP (quarterly aligned)",
+      "n_obs": 85,
+      "r_squared": 0.7561,
+      "coefficients": {
+        "const": -3.97638,
+        "UNRATE": 0.1396,
+        "TDSP": 0.50934
+      },
+      "unrate_beta_pp_per_pp": 0.1396,
+      "base": {
+        "unrate": 4.33,
+        "tdsp": 11.16,
+        "predicted_delinquency": 2.3149,
+        "as_of": "2026-01-01"
+      },
+      "scenarios": [
+        {
+          "label": "+0pp unemployment",
+          "unrate": 4.33,
+          "tdsp": 11.16,
+          "predicted_delinquency": 2.3149,
+          "delta_vs_base": 0.0
+        },
+        {
+          "label": "+1pp unemployment",
+          "unrate": 5.33,
+          "tdsp": 11.16,
+          "predicted_delinquency": 2.4545,
+          "delta_vs_base": 0.1396
+        },
+        {
+          "label": "+2pp unemployment",
+          "unrate": 6.33,
+          "tdsp": 11.16,
+          "predicted_delinquency": 2.5941,
+          "delta_vs_base": 0.2792
+        },
+        {
+          "label": "+3pp unemployment",
+          "unrate": 7.33,
+          "tdsp": 11.16,
+          "predicted_delinquency": 2.7337,
+          "delta_vs_base": 0.4188
+        }
+      ]
+    }
+  },
+  "complaint_anomalies": {
+    "status": "computed",
+    "note": null,
+    "top": [
+      {
+        "series": "Checking or savings account",
+        "date": "2025-01-01",
+        "value": 18367,
+        "rolling_mean": 5596.2,
+        "score": 3.162
+      },
+      {
+        "series": "Checking or savings account",
+        "date": "2023-01-01",
+        "value": 6395,
+        "rolling_mean": 3418.1,
+        "score": 3.079
+      },
+      {
+        "series": "Debt collection",
+        "date": "2021-03-01",
+        "value": 6740,
+        "rolling_mean": 4915.1,
+        "score": 2.912
+      },
+      {
+        "series": "Debt collection",
+        "date": "2024-03-01",
+        "value": 12354,
+        "rolling_mean": 6582.6,
+        "score": 2.788
+      },
+      {
+        "series": "Debt collection",
+        "date": "2024-02-01",
+        "value": 8772,
+        "rolling_mean": 6077.8,
+        "score": 2.711
+      }
+    ]
+  },
+  "coverage": {
+    "fred_series": [
+      "DRCCLACBS",
+      "DRCLACBS",
+      "CORCCACBS",
+      "UNRATE",
+      "TDSP"
+    ],
+    "delinquency_history": {
+      "start": "1991-01-01",
+      "end": "2026-01-01",
+      "n_quarters": 141
+    },
+    "complaints_months": 79,
+    "freshness_days_fred": 198
+  }
+}
