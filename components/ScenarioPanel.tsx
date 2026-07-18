@@ -17,13 +17,13 @@ export function ScenarioPanel({ rows, beta }: { rows: ScenarioRow[]; beta: numbe
             <span className="w-32 shrink-0 text-sm font-medium text-ink-soft">{r.label}</span>
             <div className="h-7 flex-1 overflow-hidden rounded bg-slate-100">
               <div
-                className="flex h-full items-center justify-end rounded bg-brand-600 pr-2 text-xs font-semibold text-white tabular-nums"
+                className="flex h-full items-center justify-end rounded bg-[var(--data-primary)] pr-2 text-xs font-semibold text-white tabular-nums"
                 style={{ width: `${(r.predicted_delinquency / maxV) * 100}%` }}
               >
                 {fmtPct(r.predicted_delinquency)}
               </div>
             </div>
-            <span className="w-20 shrink-0 text-right text-xs font-medium tabular-nums text-brand-700">
+            <span className="w-20 shrink-0 text-right text-xs font-medium tabular-nums text-[var(--data-primary)]">
               {r.delta_vs_base === 0 ? "base" : fmtPp(r.delta_vs_base)}
             </span>
           </div>
