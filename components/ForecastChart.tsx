@@ -1,15 +1,39 @@
-import type { SeriesPoint, ForecastPoint } from "@/lib/types";
+"use client";
 
-/**
- * Dependency-free SVG line chart: historical delinquency line + a forecast
- * segment drawn with an 80% confidence band. Pure server component (no JS
- * shipped). Accessible: role=img with a summarizing aria-label; the underlying
- * numbers are provided in a nearby table by the page.
- */
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import type { ForecastPoint, SeriesPoint } from "@/lib/types";
+
+type ForecastChartRow = {
+  date: string;
+  label: string;
+  observed: number | null;
+  forecast: number | null;
+  bandBase: number | null;
+  band: number | null;
+  lower: number | null;
+  upper: number | null;
+};
+
+function cssVar(name: string, fallback: string) {
+  if (typeof window === "undefined") return fallback;
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
 export function ForecastChart({
   history,
   forecast,
-  height = 300,
+  height = 340,
   ariaLabel,
 }: {
   history: SeriesPoint[];
@@ -17,116 +41,121 @@ export function ForecastChart({
   height?: number;
   ariaLabel: string;
 }) {
-  const W = 760;
-  const H = height;
-  const m = { top: 16, right: 18, bottom: 34, left: 40 };
-  const iw = W - m.left - m.right;
-  const ih = H - m.top - m.bottom;
+  if (!history.length || !forecast.length) {
+    return (
+      <div className="flex h-72 items-center justify-center rounded-lg border border-dashed border-[var(--border-subtle)] text-sm text-[var(--text-tertiary)]">
+        Forecast data is unavailable.
+      </div>
+    );
+  }
 
-  // Combined ordered timeline: history then forecast. The last history point is
-  // reused as the visual anchor so the forecast line/band connect seamlessly.
   const anchor = history[history.length - 1];
-  const fcAll: { date: string; value: number; lower: number; upper: number }[] = [
-    { date: anchor.date, value: anchor.value, lower: anchor.value, upper: anchor.value },
-    ...forecast,
+  const rows: ForecastChartRow[] = [
+    ...history.map((p) => ({
+      date: p.date,
+      label: p.date.slice(0, 4),
+      observed: p.value,
+      forecast: null,
+      bandBase: null,
+      band: null,
+      lower: null,
+      upper: null,
+    })),
+    ...forecast.map((p) => ({
+      date: p.date,
+      label: p.date.slice(0, 4),
+      observed: null,
+      forecast: p.value,
+      bandBase: p.lower,
+      band: p.upper - p.lower,
+      lower: p.lower,
+      upper: p.upper,
+    })),
   ];
+  rows[rows.length - forecast.length - 1] = {
+    ...rows[rows.length - forecast.length - 1],
+    forecast: anchor.value,
+    bandBase: anchor.value,
+    band: 0,
+    lower: anchor.value,
+    upper: anchor.value,
+  };
 
-  const n = history.length + forecast.length; // total x slots (anchor shared)
-  const xAt = (i: number) => m.left + (n <= 1 ? 0 : (i / (n - 1)) * iw);
-
-  const allV = [
-    ...history.map((p) => p.value),
-    ...forecast.flatMap((p) => [p.lower, p.upper, p.value]),
-  ];
-  let yMin = Math.min(...allV);
-  let yMax = Math.max(...allV);
-  const pad = (yMax - yMin) * 0.12 || 0.5;
-  yMin = Math.max(0, yMin - pad);
-  yMax = yMax + pad;
-  const yAt = (v: number) => m.top + ih - ((v - yMin) / (yMax - yMin)) * ih;
-
-  const histLine = history.map((p, i) => `${xAt(i)},${yAt(p.value)}`).join(" ");
-  const fcStartIdx = history.length - 1; // shared anchor index
-  const fcLine = fcAll.map((p, k) => `${xAt(fcStartIdx + k)},${yAt(p.value)}`).join(" ");
-  const bandTop = fcAll.map((p, k) => `${xAt(fcStartIdx + k)},${yAt(p.upper)}`);
-  const bandBot = fcAll.map((p, k) => `${xAt(fcStartIdx + k)},${yAt(p.lower)}`).reverse();
-  const bandPath = [...bandTop, ...bandBot].join(" ");
-
-  // Y gridlines / ticks
-  const ticks = 4;
-  const yTicks = Array.from({ length: ticks + 1 }, (_, i) => yMin + ((yMax - yMin) * i) / ticks);
-
-  // X year labels: pick roughly 6 evenly spaced history points
-  const combinedDates = [...history.map((p) => p.date), ...forecast.map((p) => p.date)];
-  const labelEvery = Math.max(1, Math.round(n / 6));
-  const xLabels = combinedDates
-    .map((d, i) => ({ d, i }))
-    .filter(({ i }) => i % labelEvery === 0 || i === n - 1);
+  const blue = cssVar("--accent-600", "#142d8c");
+  const ink = cssVar("--ink-soft", "#334155");
+  const grid = cssVar("--border-subtle", "#e2e8f0");
+  const band = cssVar("--data-band", "#bfdbfe");
 
   return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      width="100%"
-      height={H}
-      role="img"
-      aria-label={ariaLabel}
-      className="overflow-visible"
-    >
-      {/* Y gridlines + labels */}
-      {yTicks.map((v, i) => (
-        <g key={i}>
-          <line
-            x1={m.left}
-            x2={W - m.right}
-            y1={yAt(v)}
-            y2={yAt(v)}
-            stroke="#e2e8f0"
-            strokeWidth={1}
+    <div role="img" aria-label={ariaLabel} style={{ height }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={rows} margin={{ top: 10, right: 18, bottom: 8, left: 2 }}>
+          <CartesianGrid stroke={grid} strokeDasharray="3 3" vertical={false} />
+          <XAxis
+            dataKey="date"
+            minTickGap={34}
+            tickFormatter={(v) => String(v).slice(0, 4)}
+            tick={{ fill: "var(--ink-muted)", fontSize: 12 }}
+            axisLine={false}
+            tickLine={false}
           />
-          <text x={m.left - 8} y={yAt(v) + 3} textAnchor="end" fontSize={10} fill="#94a3b8">
-            {v.toFixed(1)}
-          </text>
-        </g>
-      ))}
-
-      {/* Forecast band */}
-      <polygon points={bandPath} fill="#f59e0b" fillOpacity={0.16} />
-
-      {/* Divider at forecast start */}
-      <line
-        x1={xAt(fcStartIdx)}
-        x2={xAt(fcStartIdx)}
-        y1={m.top}
-        y2={m.top + ih}
-        stroke="#cbd5e1"
-        strokeWidth={1}
-        strokeDasharray="3 3"
-      />
-      <text x={xAt(fcStartIdx) + 4} y={m.top + 10} fontSize={9.5} fill="#b45309" fontWeight={600}>
-        forecast →
-      </text>
-
-      {/* Historical line */}
-      <polyline points={histLine} fill="none" stroke="#334155" strokeWidth={1.8} />
-      {/* Forecast line (dashed amber) */}
-      <polyline
-        points={fcLine}
-        fill="none"
-        stroke="#d97706"
-        strokeWidth={2}
-        strokeDasharray="5 3"
-      />
-      {/* Forecast point markers */}
-      {forecast.map((p, k) => (
-        <circle key={k} cx={xAt(fcStartIdx + 1 + k)} cy={yAt(p.value)} r={2.6} fill="#b45309" />
-      ))}
-
-      {/* X labels */}
-      {xLabels.map(({ d, i }) => (
-        <text key={i} x={xAt(i)} y={H - 12} textAnchor="middle" fontSize={10} fill="#94a3b8">
-          {d.slice(0, 4)}
-        </text>
-      ))}
-    </svg>
+          <YAxis
+            width={46}
+            tickFormatter={(v) => `${Number(v).toFixed(1)}%`}
+            tick={{ fill: "var(--ink-muted)", fontSize: 12 }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <Tooltip
+            cursor={{ stroke: blue, strokeWidth: 1, strokeDasharray: "4 4" }}
+            contentStyle={{
+              background: "var(--panel)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: 12,
+              color: "var(--ink)",
+              boxShadow: "var(--shadow-1)",
+            }}
+            formatter={(value, name) => {
+              if (value == null || name === "bandBase" || name === "band") return [null, ""];
+              return [`${Number(value).toFixed(2)}%`, name === "observed" ? "Observed" : "Forecast"];
+            }}
+            labelFormatter={(label) => String(label).slice(0, 10)}
+          />
+          <Legend wrapperStyle={{ color: "var(--ink-muted)", fontSize: 12 }} />
+          <Area dataKey="bandBase" stackId="band" stroke="transparent" fill="transparent" legendType="none" isAnimationActive={false} />
+          <Area
+            dataKey="band"
+            name="80% confidence band"
+            stackId="band"
+            stroke="transparent"
+            fill={band}
+            fillOpacity={0.45}
+            isAnimationActive
+          />
+          <Line
+            type="monotone"
+            dataKey="observed"
+            name="Observed"
+            stroke={ink}
+            strokeWidth={2}
+            dot={false}
+            connectNulls
+            isAnimationActive
+          />
+          <Line
+            type="monotone"
+            dataKey="forecast"
+            name="Forecast"
+            stroke={blue}
+            strokeWidth={2.5}
+            dot={{ r: 3, fill: blue, strokeWidth: 0 }}
+            strokeDasharray="5 4"
+            connectNulls
+            isAnimationActive
+          />
+          <ReferenceLine x={anchor.date} stroke={grid} strokeDasharray="4 4" label={{ value: "forecast", fill: "var(--ink-muted)", fontSize: 11 }} />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

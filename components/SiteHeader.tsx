@@ -5,14 +5,15 @@ const NAV = [
   { href: "/", label: "Executive Overview" },
   { href: "/methodology", label: "Methodology & Data" },
   { href: "/about", label: "About" },
-];
+] as const;
 
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--chrome-border)] bg-[var(--chrome-bg)] backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-700 text-white">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/" className="ds-focus-ring flex items-center gap-2.5 rounded-lg">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-600)] text-white shadow-[var(--shadow-1)]">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M3 12h3.5l2-6 3.5 13 3-8 1.8 3H21"
@@ -24,9 +25,13 @@ export function SiteHeader() {
             </svg>
           </span>
           <span className="text-[15px] font-semibold tracking-tight text-[var(--chrome-text)]">PulseCredit</span>
-        </Link>
-        <div className="flex items-center gap-3">
-          <nav aria-label="Primary" className="flex items-center gap-1">
+          </Link>
+          <div className="lg:hidden">
+            <ThemeToggle />
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <nav aria-label="Primary" className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
             {NAV.map((n) => (
               <Link
                 key={n.href}
@@ -37,7 +42,9 @@ export function SiteHeader() {
               </Link>
             ))}
           </nav>
-          <ThemeToggle />
+          <div className="hidden lg:block">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>

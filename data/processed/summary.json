@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-18T02:05:38.045566+00:00",
+  "generated_at": "2026-07-18T13:23:34.184339+00:00",
   "headline": {
     "metric": "Credit-card delinquency rate (DRCCLACBS)",
     "latest_value_pct": 2.92,
@@ -79,6 +79,83 @@
           "delta_vs_base": 0.4188
         }
       ]
+    }
+  },
+  "macro_drivers": {
+    "as_of": "2026-01-01",
+    "drivers": [
+      {
+        "series_id": "UNRATE",
+        "label": "Civilian unemployment rate (%)",
+        "latest": 4.333,
+        "yoy_change": 0.2,
+        "corr_with_card_delinquency": 0.42
+      },
+      {
+        "series_id": "TDSP",
+        "label": "Household debt service payments as % of disposable income (%)",
+        "latest": 11.164,
+        "yoy_change": 0.059,
+        "corr_with_card_delinquency": 0.836
+      },
+      {
+        "series_id": "DRCLACBS",
+        "label": "Delinquency rate on consumer loans, all commercial banks (%)",
+        "latest": 2.64,
+        "yoy_change": -0.13,
+        "corr_with_card_delinquency": 0.971
+      },
+      {
+        "series_id": "CORCCACBS",
+        "label": "Charge-off rate on credit card loans, all commercial banks (%)",
+        "latest": 3.84,
+        "yoy_change": -0.62,
+        "corr_with_card_delinquency": 0.856
+      }
+    ]
+  },
+  "breakdowns": {
+    "product": [
+      {
+        "product": "Credit reporting or other personal consumer reports",
+        "latest_month": "2026-07-01",
+        "latest_month_complaints": 300767,
+        "trailing_12m_complaints": 5775370,
+        "trailing_12m_yoy_pct": -2.1
+      },
+      {
+        "product": "Credit reporting, credit repair services, or other personal consumer reports",
+        "latest_month": "2023-08-01",
+        "latest_month_complaints": 77309,
+        "trailing_12m_complaints": 882948,
+        "trailing_12m_yoy_pct": 3.0
+      },
+      {
+        "product": "Debt collection",
+        "latest_month": "2026-07-01",
+        "latest_month_complaints": 8366,
+        "trailing_12m_complaints": 315700,
+        "trailing_12m_yoy_pct": -5.0
+      },
+      {
+        "product": "Checking or savings account",
+        "latest_month": "2026-07-01",
+        "latest_month_complaints": 1702,
+        "trailing_12m_complaints": 79077,
+        "trailing_12m_yoy_pct": -5.6
+      },
+      {
+        "product": "Credit card",
+        "latest_month": "2026-07-01",
+        "latest_month_complaints": 1705,
+        "trailing_12m_complaints": 88689,
+        "trailing_12m_yoy_pct": -6.7
+      }
+    ],
+    "region": {
+      "status": "unavailable",
+      "note": "CFPB state/region complaint aggregation was not available from the keyless trends endpoint in this run; no regional figures are shown.",
+      "rows": []
     }
   },
   "complaint_anomalies": {
