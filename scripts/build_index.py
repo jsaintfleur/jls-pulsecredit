@@ -237,6 +237,27 @@ def scenario_model(df):
     }
 
 
+def macro_driver_summary(qdf):
+    cols = ["DRCCLACBS", "DRCLACBS", "CORCCACBS", "UNRATE", "TDSP"]
+    d = qdf[cols].dropna()
+    latest = d.iloc[-1]
+    prior = d.iloc[-5] if len(d) >= 5 else d.iloc[0]
+    corr = d.corr(numeric_only=True)["DRCCLACBS"].drop("DRCCLACBS")
+    return {
+        "as_of": d.index[-1].strftime("%Y-%m-%d"),
+        "drivers": [
+            {
+                "series_id": sid,
+                "label": FRED_SERIES[sid],
+                "latest": round(float(latest[sid]), 3),
+                "yoy_change": round(float(latest[sid] - prior[sid]), 3),
+                "corr_with_card_delinquency": round(float(corr.get(sid, np.nan)), 3),
+            }
+            for sid in ("UNRATE", "TDSP", "DRCLACBS", "CORCCACBS")
+        ],
+    }
+
+
 # ----------------------------------------------------------------------------
 # CFPB complaint anomalies
 # ----------------------------------------------------------------------------
@@ -349,6 +370,32 @@ def build_anomalies(total, products):
     return result
 
 
+def build_breakdowns(products):
+    product_rows = []
+    for name, ser in sorted(products.items(), key=lambda kv: -kv[1].sum()):
+        if ser.empty:
+            continue
+        latest = int(ser.iloc[-1])
+        trailing = int(ser.tail(12).sum())
+        prior = int(ser.iloc[-13:-1].sum()) if len(ser) >= 24 else None
+        yoy = round((trailing - prior) / prior * 100, 1) if prior else None
+        product_rows.append({
+            "product": name,
+            "latest_month": ser.index[-1].strftime("%Y-%m-%d"),
+            "latest_month_complaints": latest,
+            "trailing_12m_complaints": trailing,
+            "trailing_12m_yoy_pct": yoy,
+        })
+    return {
+        "product": product_rows[:8],
+        "region": {
+            "status": "unavailable",
+            "note": "CFPB state/region complaint aggregation was not available from the keyless trends endpoint in this run; no regional figures are shown.",
+            "rows": [],
+        },
+    }
+
+
 # ----------------------------------------------------------------------------
 # Main
 # ----------------------------------------------------------------------------
@@ -363,10 +410,12 @@ def main():
         f"vs naive {backtest['naive_rmse']} (beats={backtest['beats_naive_rmse']})")
 
     scen = scenario_model(qdf)
+    drivers = macro_driver_summary(qdf)
     log(f"Scenario: +1pp unemployment -> +{scen['scenarios'][1]['delta_vs_base']}pp delinquency")
 
     total, products, cfpb_note = fetch_cfpb()
     anomalies = build_anomalies(total, products)
+    breakdowns = build_breakdowns(products)
 
     # ---- series.json (tidy) ----
     def tidy(sid):
@@ -393,6 +442,8 @@ def main():
                                  for i, x in v.items()] for k, v in products.items()}
                            if products else {}),
         },
+        "breakdowns": breakdowns,
+        "macro_drivers": drivers,
     }
     (PROC / "series.json").write_text(json.dumps(series_out, indent=2))
 
@@ -426,6 +477,8 @@ def main():
             "plus_2pp_unemployment_delta_pp": scen["scenarios"][2]["delta_vs_base"],
             "detail": scen,
         },
+        "macro_drivers": drivers,
+        "breakdowns": breakdowns,
         "complaint_anomalies": {
             "status": "computed" if anomalies["available"] else "unavailable",
             "note": cfpb_note,
@@ -444,6 +497,15 @@ def main():
         },
     }
     (PROC / "summary.json").write_text(json.dumps(summary, indent=2))
+
+    export_rows = []
+    for p in fc_points:
+        export_rows.append({"section": "forecast", **p})
+    for r in scen["scenarios"]:
+        export_rows.append({"section": "scenario", **r})
+    for r in anomalies["top"][:25]:
+        export_rows.append({"section": "anomaly", **r})
+    pd.DataFrame(export_rows).to_csv(PROC / "pulsecredit-export.csv", index=False)
 
     # ---- sources.json ----
     sources = {
@@ -480,6 +542,12 @@ def main():
         },
     }
     (META / "sources.json").write_text(json.dumps(sources, indent=2))
+    public_data = ROOT / "public" / "data"
+    public_data.mkdir(parents=True, exist_ok=True)
+    (public_data / "series.json").write_text(json.dumps(series_out, indent=2))
+    (public_data / "summary.json").write_text(json.dumps(summary, indent=2))
+    (public_data / "sources.json").write_text(json.dumps(sources, indent=2))
+    (public_data / "pulsecredit-export.csv").write_text((PROC / "pulsecredit-export.csv").read_text())
 
     log(f"Wrote series.json, summary.json, sources.json in {time.time()-t0:.1f}s")
 

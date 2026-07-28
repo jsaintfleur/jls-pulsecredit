@@ -1,48 +1,58 @@
+import { SectionHeader } from "@/lib/design/primitives";
+
 export const metadata = { title: "About — PulseCredit" };
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 pb-8 pt-14">
-      <h1 className="text-3xl font-semibold tracking-tight text-ink">About PulseCredit</h1>
-
-      <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-ink-soft">
+    <main className="mx-auto max-w-4xl px-5 pb-10 pt-12 sm:px-6">
+      <SectionHeader eyebrow="About PulseCredit" title="A public-data briefing product for household credit stress">
         <p>
-          Household financial stress builds quietly and then breaks suddenly. By the time delinquencies
-          spike in a quarterly report, the strain has been accumulating for months. Risk, policy, and
-          macro teams need one defensible instrument that combines <em>where delinquency is heading</em>,{" "}
-          <em>how sensitive it is to the labor market</em>, and <em>where consumers are already
-          shouting</em> — early enough to act.
+          PulseCredit helps credit-risk, macro, and policy teams ask better operating questions before
+          delinquency stress becomes obvious in quarterly reporting.
+        </p>
+      </SectionHeader>
+
+      <div className="space-y-5 text-[15px] leading-relaxed text-[var(--text-secondary)]">
+        <p>
+          The product combines four decision layers: a card-delinquency forecast with an honest
+          confidence band, an unemployment-shock simulator, a complaint-anomaly monitor, and product
+          concentration context. Its most important design choice is candor: the current forecast does
+          not beat a naive baseline, and regional breakdowns are not shown when the public endpoint
+          cannot support them.
         </p>
         <p>
-          PulseCredit turns three authoritative public feeds into that instrument: a forecast of
-          credit-card delinquency with an honest confidence band, an unemployment-shock scenario model,
-          and a complaint-anomaly early-warning layer — every number traceable to its source, every
-          limitation stated plainly, including where the forecast falls short.
+          That makes PulseCredit useful as a briefing instrument. It does not replace lender portfolio
+          data or supervisory analysis; it gives stakeholders a defensible public-data starting point
+          for reserve planning, staffing, policy monitoring, and product triage.
         </p>
 
-        <h2 className="pt-4 text-xl font-semibold tracking-tight text-ink">Who it&apos;s for</h2>
-        <p>
-          Consumer-credit risk officers, bank and fintech portfolio analysts, macro and rates
-          strategists, financial-stability and consumer-protection policy teams, and economics
-          researchers who need a fast, auditable read on U.S. household credit stress.
-        </p>
-
-        <h2 className="pt-4 text-xl font-semibold tracking-tight text-ink">About the author</h2>
-        <p>
-          PulseCredit is part of a five-product data portfolio by <b>Jean-Luc Saint-Fleur</b>, spanning
-          housing, financial services, healthcare, retail, and transportation &amp; climate. Each
-          product pairs a real business problem, credible public data, a defensible analytical method,
-          and an executive-ready interface — and is honest about what the data can and cannot support.
-        </p>
-
-        <div className="mt-6 rounded-xl border border-slate-200 bg-panel p-5 text-sm">
-          <p className="font-semibold text-ink">Built with</p>
-          <p className="mt-1.5 text-ink-muted">
-            Next.js 15 · TypeScript · Tailwind CSS · dependency-free SVG charts · Python (Pandas,
-            statsmodels) · FRED &amp; CFPB public data. Deployed on Vercel.
+        <section className="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--bg-panel)] p-5 shadow-[var(--shadow-1)]">
+          <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">Who it is for</h2>
+          <p className="mt-3">
+            Consumer-credit risk officers, payer and bank portfolio analysts, macro strategists,
+            financial-stability teams, consumer-protection policy analysts, and researchers who need a
+            fast, auditable read on U.S. household credit stress.
           </p>
-        </div>
+        </section>
+
+        <section className="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--bg-panel)] p-5 shadow-[var(--shadow-1)]">
+          <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">About the author</h2>
+          <p className="mt-3">
+            PulseCredit is part of a five-product data portfolio by <b>Jean-Luc Saint-Fleur</b>,
+            spanning housing, financial services, healthcare, retail, and transportation. Each product
+            pairs a real business problem, credible public data, defensible analytics, and an
+            executive-ready interface.
+          </p>
+        </section>
+
+        <section className="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--bg-panel)] p-5 shadow-[var(--shadow-1)]">
+          <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">Built with</h2>
+          <p className="mt-3">
+            Next.js 15, TypeScript, Tailwind CSS, Recharts, Python, Pandas, statsmodels, FRED public
+            data, and CFPB public data. Deployed on Vercel.
+          </p>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

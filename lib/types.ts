@@ -26,6 +26,8 @@ export interface Series {
     total: SeriesPoint[];
     by_product: Record<string, SeriesPoint[]>;
   };
+  macro_drivers: MacroDrivers;
+  breakdowns: Breakdowns;
 }
 
 export interface ScenarioRow {
@@ -42,6 +44,38 @@ export interface AnomalyRow {
   value: number;
   rolling_mean: number;
   score: number;
+}
+
+export interface MacroDriver {
+  series_id: string;
+  label: string;
+  latest: number;
+  yoy_change: number | null;
+  corr_with_card_delinquency: number | null;
+}
+
+export interface MacroDrivers {
+  as_of: string;
+  drivers: MacroDriver[];
+}
+
+export interface ProductBreakdownRow {
+  product: string;
+  latest_month: string;
+  latest_month_complaints: number;
+  trailing_12m_complaints: number;
+  trailing_12m_yoy_pct: number | null;
+}
+
+export interface RegionBreakdown {
+  status: "computed" | "proposed" | "unavailable";
+  note: string;
+  rows: Array<Record<string, string | number | null>>;
+}
+
+export interface Breakdowns {
+  product: ProductBreakdownRow[];
+  region: RegionBreakdown;
 }
 
 export interface Summary {
@@ -94,6 +128,8 @@ export interface Summary {
     note: string | null;
     top: AnomalyRow[];
   };
+  macro_drivers: MacroDrivers;
+  breakdowns: Breakdowns;
   coverage: {
     fred_series: string[];
     delinquency_history: { start: string; end: string; n_quarters: number };
